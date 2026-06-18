@@ -125,9 +125,13 @@ orders.post('/', async (c) => {
     const { data: existing } = await supabaseAdmin.from('product_stocks')
       .select('stock').eq('product_id', productId).eq('location_id', targetLocId).maybeSingle()
     const currentQty = existing ? (existing.stock ?? 0) : 0
-    await supabaseAdmin.from('product_stocks').upsert({
+    const { error: stockErr } = await supabaseAdmin.from('product_stocks').upsert({
       product_id: productId, location_id: targetLocId, stock: Math.max(0, currentQty - quantity),
     }, { onConflict: 'product_id,location_id' })
+    if (stockErr) {
+      await supabaseAdmin.from('orders').delete().eq('id', orderId)
+      return c.json({ error: 'Gagal memperbarui stok: ' + stockErr.message }, 500)
+    }
   }
 
   return c.json({ ok: true, id: orderId, code: orderCode, type: effType, status: orderStatus, subtasks: tempSubtasks })

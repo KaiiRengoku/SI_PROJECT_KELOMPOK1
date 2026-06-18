@@ -98,15 +98,13 @@ export const EditOrderDialog = ({ open, onOpenChange, order }: EditOrderDialogPr
     const stockObj = (product.stock || {}) as Record<string, number>;
     
     return safeLocations.map((loc) => {
-      // Kembalikan sisa stok ditambah jumlah pesanan saat ini jika produk dan lokasi yang dipilih sama (agar stok tidak berkurang ganda saat mengedit jumlah barang)
-      const originalQuantity = (order?.productId === productId && (order?.locationName === loc.name || order?.notes?.includes(`[Sumber Barang: ${loc.name}]`))) ? order.quantity : 0;
       return {
         id: loc.id,
         name: loc.name,
-        stock: (Number(stockObj[loc.id]) || 0) + originalQuantity
+        stock: Number(stockObj[loc.id]) || 0,
       };
     });
-  }, [product, productId, safeLocations, order]);
+  }, [product, productId, safeLocations]);
 
   const currentSelectedStock = useMemo(() => {
     const loc = locationsWithStockTable.find(l => l.id === selectedLocationId);

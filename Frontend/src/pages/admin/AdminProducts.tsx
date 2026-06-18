@@ -25,7 +25,7 @@ interface StoreLocation {
 }
 
 export default function AdminProducts() {
-  const { products, addProduct, updateProduct, deleteProduct, skills, locations, addLocation, deleteLocation, categories, addCategory, updateCategory, deleteCategory } = useStore();
+  const { products, addProduct, updateProduct, deleteProduct, skills, locations, addLocation, updateLocation, deleteLocation, categories, addCategory, updateCategory, deleteCategory } = useStore();
   // --- STATE FILTRATION & SEARCH ---
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("all");
@@ -226,7 +226,12 @@ export default function AdminProducts() {
     }
 
     if (editingStore) {
-      toast.error("Fitur update nama toko dinonaktifkan demi keselamatan relasi data");
+      const res = await updateLocation(editingStore.id, inputName);
+      if (res.ok) {
+        toast.success("Nama cabang toko berhasil diperbarui");
+      } else {
+        toast.error(res.message || "Gagal memperbarui nama cabang");
+      }
     } else {
       const res = await addLocation(inputName);
       if (res.ok) {

@@ -16,6 +16,7 @@ import { EditOrderDialog } from "@/components/prodify/EditOrderDialog";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ORDER_SOURCES } from "@/lib/orderSources";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +65,7 @@ export default function AdminOrders() {
   const [tab, setTab] = useState<string>("Semua");
   
   const [filterSumber, setFilterSumber] = useState<string>("Semua");
+  const [filterKategoriProduk, setFilterKategoriProduk] = useState<string>("Semua");
   const [filterKategori, setFilterKategori] = useState<string>("Semua");
 
   const [openNew, setOpenNew] = useState(false);
@@ -104,6 +106,13 @@ export default function AdminOrders() {
         return o.source?.toLowerCase() === filterSumber.toLowerCase();
       })
       .filter((o) => {
+        if (filterKategoriProduk !== "Semua") {
+          const prod = store.products.find((p) => p.id === o.productId);
+          if (prod?.category !== filterKategoriProduk) return false;
+        }
+        return true;
+      })
+      .filter((o) => {
         if (filterKategori === "Semua") return true;
         if (filterKategori === "ready_stock") return o.type === "ready_stock";
         if (filterKategori === "custom") return o.type !== "ready_stock";
@@ -113,7 +122,7 @@ export default function AdminOrders() {
         [o.code, o.productName, o.customerName].join(" ").toLowerCase().includes(search.toLowerCase())
       )
       .sort((a, b) => Number(b.fastTrack) - Number(a.fastTrack));
-  }, [orders, tab, search, filterSumber, filterKategori]);
+  }, [orders, tab, search, filterSumber, filterKategoriProduk, filterKategori, store.products]);
 
   return (
     <div className="space-y-4">
@@ -141,12 +150,23 @@ export default function AdminOrders() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Semua">Semua Sumber</SelectItem>
-                <SelectItem value="Manual">Manual</SelectItem>
-                <SelectItem value="Shopee">Shopee</SelectItem>
-                <SelectItem value="TikTok Shop">TikTok Shop</SelectItem>
-                <SelectItem value="Tokopedia">Tokopedia</SelectItem>
-                <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                <SelectItem value="Instagram">Instagram</SelectItem>
+                {ORDER_SOURCES.map((s) => (
+                  <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-full md:w-44 shrink-0">
+            <Select value={filterKategoriProduk} onValueChange={setFilterKategoriProduk}>
+              <SelectTrigger className="h-9 text-xs">
+                <SelectValue placeholder="Semua Produk" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Semua">Semua Produk</SelectItem>
+                {[...new Set(store.products.map((p) => p.category).filter(Boolean))].sort().map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

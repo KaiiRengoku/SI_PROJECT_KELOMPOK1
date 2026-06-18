@@ -191,6 +191,7 @@ interface State {
   deleteProduct: (id: string) => Promise<void>;
 
   addLocation: (name: string) => Promise<{ ok: boolean; message?: string }>;
+  updateLocation: (id: string, name: string) => Promise<{ ok: boolean; message?: string }>;
   deleteLocation: (id: string) => Promise<{ ok: boolean; message?: string }>;
 
   markNotificationRead: (id: string) => Promise<void>;
@@ -404,6 +405,12 @@ const activeTasks = orders.reduce((count, order) => {
           partName: s.partName, point: s.point ?? 0, status: s.status,
         }))
         set((state) => ({ orders: [...state.orders, mapOrder(dbData, tempSubtasks)] }))
+
+        const [pRes, sRes] = await Promise.all([
+          supabase.from("products").select("*"),
+          supabase.from("product_stocks").select("*"),
+        ]);
+        set({ products: (pRes.data ?? []).map((p) => mapProduct(p, sRes.data ?? [])) });
       },
 
       updateOrder: async (id, updates) => {
@@ -411,6 +418,13 @@ const activeTasks = orders.reduce((count, order) => {
           method: 'PUT',
           body: JSON.stringify(updates),
         })
+
+        const [pRes, sRes] = await Promise.all([
+          supabase.from("products").select("*"),
+          supabase.from("product_stocks").select("*"),
+        ]);
+        set({ products: (pRes.data ?? []).map((p) => mapProduct(p, sRes.data ?? [])) });
+
         const product = get().products.find((p) => p.id === updates.productId)
         const oldOrder = get().orders.find((o) => o.id === id)
         const nextStatus = (() => {
@@ -673,6 +687,27 @@ const activeTasks = orders.reduce((count, order) => {
           return { ok: true }
         } catch (e: any) {
           return { ok: false, message: e.message || 'Gagal menyimpan toko baru' }
+        }
+      },
+
+      updateLocation: async (id: string, name: string) => {
+        const cleaned = name.trim();
+        if (!cleaned) return { ok: false, message: "Nama toko tidak boleh kosong Bos" };
+        if (get().locations.some((l) => l.name.toLowerCase() === cleaned.toLowerCase() && l.id !== id)) {
+          return { ok: false, message: "Nama toko sudah ada di database" };
+        }
+        try {
+          const { location } = await apiFetch(`/api/locations/${id}`, {
+            method: 'PUT', body: JSON.stringify({ name: cleaned }),
+          })
+          set((state) => ({
+            locations: state.locations
+              .map((l) => (l.id === id ? { id: l.id, name: location.name } : l))
+              .sort((a, b) => a.name.localeCompare(b.name))
+          }))
+          return { ok: true }
+        } catch (e: any) {
+          return { ok: false, message: e.message || 'Gagal memperbarui nama toko' }
         }
       },
 
