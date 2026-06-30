@@ -20,15 +20,16 @@ const formatRupiah = (value: number | string) => {
 
 export default function PengrajinHistory() {
   const { currentUser, points } = useStore();
+
+  // filter dropdown — tahun & bulan terpisah
+  const [filterYear, setFilterYear] = useState(() => String(new Date().getFullYear()));
+  const [filterMonth, setFilterMonth] = useState(() => String(new Date().getMonth() + 1).padStart(2, "0"));
+
   if (!currentUser) return null;
 
   const mine = points
     .filter((p) => p.userId === currentUser.id)
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
-
-  // filter dropdown — tahun & bulan terpisah
-  const [filterYear, setFilterYear] = useState(() => String(new Date().getFullYear()));
-  const [filterMonth, setFilterMonth] = useState(() => String(new Date().getMonth() + 1).padStart(2, "0"));
 
   // stat cards — berdasarkan filter terpilih
   const statPoints = mine.filter((p) => {

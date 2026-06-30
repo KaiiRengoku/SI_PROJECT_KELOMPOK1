@@ -20,8 +20,9 @@ interface EditOrderDialogProps {
 }
 
 export const EditOrderDialog = ({ open, onOpenChange, order }: EditOrderDialogProps) => {
-  const { products, orders, locations } = useStore();
-  const updateOrder = (useStore() as any).updateOrder || (useStore() as any).editOrder;
+  const store = useStore();
+  const { products, orders, locations } = store;
+  const updateOrder = (store as any).updateOrder || (store as any).editOrder;
 
   const [type, setType] = useState<OrderType>("custom");
   const [productId, setProductId] = useState("");

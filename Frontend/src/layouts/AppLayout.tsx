@@ -58,12 +58,11 @@ const allowedPrefixes: Record<Role, string[]> = {
 const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
   const { currentUser, logout, notifications, orders, products, dismissedAutoNotifs } = useStore();
   const navigate = useNavigate();
+  const [showLogout, setShowLogout] = useState(false);
   if (!currentUser) return null;
   const items = navByRole[currentUser.role];
   const auto = buildAutoNotifications(orders, products).map((n) => ({ ...n, read: n.read || dismissedAutoNotifs.includes(n.id) }));
   const unread = filterByRole([...auto, ...notifications], currentUser.role).filter((n) => !n.read).length;
-  const [showLogout, setShowLogout] = useState(false);
-
   return (
     <div className="flex h-full flex-col bg-card overflow-hidden">
       <div className="p-5 pb-3">
