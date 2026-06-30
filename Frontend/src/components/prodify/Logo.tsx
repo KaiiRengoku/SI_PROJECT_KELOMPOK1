@@ -2,7 +2,7 @@ export const Logo = ({ size = "md", variant = "brand" }: { size?: "sm" | "md" | 
   const sizes = {
     sm: { icon: "h-6 w-6", text: "text-sm", sub: "text-[10px]" },
     md: { icon: "h-8 w-8", text: "text-lg", sub: "text-[11px]" },
-    lg: { icon: "h-16 w-16", text: "text-xl", sub: "text-xs" },
+    lg: { icon: "h-20 w-20", text: "text-xl", sub: "text-xs" },
   }[size];
 
   return (
