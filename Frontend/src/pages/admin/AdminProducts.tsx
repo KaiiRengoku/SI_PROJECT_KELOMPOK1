@@ -426,6 +426,7 @@ export default function AdminProducts() {
                 <th className="p-4 pl-5 whitespace-nowrap">Nama Produk Jadi</th>
                 <th className="p-4 whitespace-nowrap">Kategori</th>
                 <th className="p-4 whitespace-nowrap">Harga Jual</th>
+                <th className="p-4 whitespace-nowrap">HPP</th>
                 {stores.map(st => (
                   <th key={st.id} className="p-4 text-center whitespace-nowrap bg-muted/20 font-semibold border-x border-border/30">
                     <div className="flex items-center justify-center gap-1.5 text-foreground/80 text-[11px]">
@@ -463,6 +464,9 @@ export default function AdminProducts() {
                     <td className="p-4 font-bold text-slate-800 whitespace-nowrap">
                       {formatRupiah(p.basePrice)}
                     </td>
+                    <td className="p-4 font-bold text-emerald-600 whitespace-nowrap">
+                      {formatRupiah(p.parts.reduce((sum, part) => sum + (part.point || 0), 0))}
+                    </td>
                     {stores.map(st => {
                       const currentStock = getProductStockInStore(p, st.id);
                       const isZero = currentStock === 0;
@@ -498,7 +502,7 @@ export default function AdminProducts() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4 + stores.length} className="p-12 text-center text-muted-foreground italic bg-slate-50/50">
+                  <td colSpan={5 + stores.length} className="p-12 text-center text-muted-foreground italic bg-slate-50/50">
                     Tidak ada produk yang cocok dengan pencarian atau filter kategori saat ini.
                   </td>
                 </tr>
