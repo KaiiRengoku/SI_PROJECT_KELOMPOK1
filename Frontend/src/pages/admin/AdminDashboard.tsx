@@ -356,7 +356,7 @@ export default function AdminDashboard() {
                 <div key={p.id} className="flex items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">{active}/{cap} tugas</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{active}/{cap === 0 ? "∞" : cap} tugas</p>
                   </div>
                   <span className={cn("inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-semibold", status === "busy" ? "bg-destructive/15 text-destructive" : status === "inactive" ? "bg-muted text-muted-foreground" : "bg-success/15 text-success")}>
                     <span className={cn("h-1.5 w-1.5 rounded-full", status === "busy" ? "bg-destructive" : status === "inactive" ? "bg-muted-foreground" : "bg-success")} />
