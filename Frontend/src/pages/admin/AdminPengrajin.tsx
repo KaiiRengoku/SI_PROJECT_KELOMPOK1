@@ -46,6 +46,7 @@ export default function AdminPengrajin() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [confirmDelete, setConfirmDelete] = useState<User | null>(null);
   const [confirmToggle, setConfirmToggle] = useState<User | null>(null);
+  const [errorModal, setErrorModal] = useState<{ show: boolean; name: string; type: string; count: number }>({ show: false, name: "", type: "", count: 0 });
 
   const [showPassword, setShowPassword] = useState(false);
   // --- STATE KHUSUS CRUD MASTER SKILL ---
@@ -171,6 +172,12 @@ export default function AdminPengrajin() {
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
+    const activeCount = busyMap.get(confirmDelete.id) ?? 0;
+    if (activeCount > 0) {
+      setErrorModal({ show: true, name: confirmDelete.name, type: "hapus", count: activeCount });
+      setConfirmDelete(null);
+      return;
+    }
     const res = await deleteUser(confirmDelete.id);
     if (!res.ok) {
       toast({ title: "Tidak bisa menghapus", description: res.message, variant: "destructive" });
@@ -185,11 +192,7 @@ export default function AdminPengrajin() {
     if (confirmToggle.active !== false) {
       const activeCount = busyMap.get(confirmToggle.id) ?? 0;
       if (activeCount > 0) {
-        toast({ 
-          title: "Tidak dapat menonaktifkan", 
-          description: `${confirmToggle.name} masih memiliki ${activeCount} tugas aktif. Selesaikan atau unassign tugas terlebih dahulu.`,
-          variant: "destructive" 
-        });
+        setErrorModal({ show: true, name: confirmToggle.name, type: "nonaktifkan", count: activeCount });
         setConfirmToggle(null);
         return;
       }
@@ -380,11 +383,7 @@ const handleAddMasterSkill = async () => {
                           <DropdownMenuItem 
                             onClick={() => {
                               if (!inactive && (busyMap.get(u.id) ?? 0) > 0) {
-                                toast({ 
-                                  title: "Tidak dapat menonaktifkan", 
-                                  description: `${u.name} masih memiliki ${busyMap.get(u.id)} tugas aktif. Selesaikan atau unassign tugas terlebih dahulu.`,
-                                  variant: "destructive" 
-                                });
+                                setErrorModal({ show: true, name: u.name, type: "nonaktifkan", count: busyMap.get(u.id) ?? 0 });
                                 return;
                               }
                               setConfirmToggle(u);
@@ -398,8 +397,18 @@ const handleAddMasterSkill = async () => {
                             {inactive ? <><Power className="h-3.5 w-3.5" /> Aktifkan</> : <><PowerOff className="h-3.5 w-3.5" /> Nonaktifkan</>}
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => setConfirmDelete(u)} 
-                            className="gap-2 text-xs font-medium text-destructive focus:text-destructive focus:bg-destructive/5 cursor-pointer rounded-lg"
+                            onClick={() => {
+                              if ((busyMap.get(u.id) ?? 0) > 0) {
+                                setErrorModal({ show: true, name: u.name, type: "hapus", count: busyMap.get(u.id) ?? 0 });
+                                return;
+                              }
+                              setConfirmDelete(u);
+                            }} 
+                            className={cn("gap-2 text-xs font-medium cursor-pointer rounded-lg",
+                              (busyMap.get(u.id) ?? 0) > 0
+                                ? "text-muted-foreground opacity-50"
+                                : "text-destructive focus:text-destructive focus:bg-destructive/5"
+                            )}
                           >
                             <Trash2 className="h-3.5 w-3.5" /> Hapus Akun
                           </DropdownMenuItem>
@@ -709,6 +718,28 @@ const handleAddMasterSkill = async () => {
             <AlertDialogAction onClick={handleToggle} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black rounded-xl h-10 font-bold">
               {confirmToggle?.active === false ? "Ya, aktifkan" : "Ya, nonaktif"}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* MODAL ERROR - TUGAS AKTIF */}
+      <AlertDialog open={errorModal.show} onOpenChange={(o) => !o && setErrorModal({ ...errorModal, show: false })}>
+        <AlertDialogContent className="w-[calc(100%-32px)] sm:w-full max-w-sm rounded-3xl p-6">
+          <AlertDialogHeader>
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </div>
+            <AlertDialogTitle className="text-center text-lg font-bold">
+              Tidak Bisa {errorModal.type === "hapus" ? "Hapus" : "Nonaktifkan"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-sm">
+              Pengrajin <strong className="text-foreground">{errorModal.name}</strong> masih memiliki <strong className="text-foreground">{errorModal.count}</strong> tugas aktif. Selesaikan atau unassign tugas terlebih dahulu.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 flex justify-center">
+            <AlertDialogCancel className="rounded-xl h-10 font-medium px-8" onClick={() => setErrorModal({ ...errorModal, show: false })}>
+              Tutup
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

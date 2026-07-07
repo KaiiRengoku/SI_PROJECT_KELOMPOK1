@@ -183,6 +183,14 @@ auth.post('/unregister', requireAuth, async (c) => {
   const { id } = await c.req.json() as any
   if (!id) return c.json({ error: 'User ID harus diisi' }, 400)
 
+  const { count } = await supabaseAdmin.from('subtasks')
+    .select('*', { count: 'exact', head: true })
+    .eq('assigned_to', id)
+    .neq('status', 'Selesai')
+  if (count && count > 0) {
+    return c.json({ error: `Tidak dapat menghapus: pengrajin masih memiliki ${count} tugas aktif. Selesaikan atau unassign tugas terlebih dahulu.` }, 400)
+  }
+
   await supabaseAdmin.from('point_entries').delete().eq('user_id', id)
   await supabaseAdmin.from('subtasks').update({ assigned_to: null }).eq('assigned_to', id)
 
