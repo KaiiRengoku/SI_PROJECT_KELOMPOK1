@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Penugasan() {
-  const { orders, users, skills, assignSubtask, bootstrap, getPengrajinStatus } = useStore();
+  const { orders, users, skills, assignSubtask, getPengrajinStatus } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
@@ -146,7 +146,6 @@ export default function Penugasan() {
     try {
       await assignSubtask(selectedData.order.id, selectedData.subtask.id, userId);
       toast.success("Bagian berhasil ditugaskan");
-      await bootstrap();
     } catch (error) {
       toast.error("Gagal menugaskan bagian");
     } finally {
