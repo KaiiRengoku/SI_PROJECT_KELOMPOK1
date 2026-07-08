@@ -291,7 +291,7 @@ export const useStore = create<State>()(
           };
 
           // ========================================================
-          // PENGECEKAN STATUS REALTIME SUPER KETAT & AMAN
+          // REALTIME SUBSCRIPTION DENGAN ERROR HANDLING & RECONNECT
           // ========================================================
           const existingChannels = supabase.getChannels();
           const oldChannel = existingChannels.find(
@@ -299,14 +299,17 @@ export const useStore = create<State>()(
           );
 
           if (oldChannel && (oldChannel.state === "joined" || oldChannel.state === "joining")) {
+            console.log("[Realtime] Channel knitflow sudah aktif, skip pembuatan baru");
             return;
           }
 
           if (oldChannel) {
+            console.log("[Realtime] Menghapus channel lama:", oldChannel.state);
             await supabase.removeChannel(oldChannel);
           }
 
-          supabase.channel("knitflow")
+          console.log("[Realtime] Membuat channel knitflow...");
+          const channel = supabase.channel("knitflow")
             .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, refreshOrders)
             .on("postgres_changes", { event: "*", schema: "public", table: "subtasks" }, refreshOrders)
             .on("postgres_changes", { event: "*", schema: "public", table: "products" }, refreshProducts)
@@ -331,7 +334,33 @@ export const useStore = create<State>()(
               const r = await supabase.from("notifications").select("*").order("date", { ascending: false });
               set({ notifications: (r.data ?? []).map(mapNotif) });
             })
-            .subscribe();
+            .on("postgres_changes", { event: "*", schema: "public", table: "point_entries" }, async () => {
+              const r = await supabase.from("point_entries").select("*").order("date", { ascending: false });
+              set({ points: (r.data ?? []).map(mapPoint) });
+            })
+            .subscribe((status, err) => {
+              if (status === "SUBSCRIBED") {
+                console.log("[Realtime] Channel knitflow BERHASIL terhubung!");
+              } else if (status === "CHANNEL_ERROR") {
+                console.error("[Realtime] Channel ERROR:", err);
+              } else if (status === "TIMED_OUT") {
+                console.warn("[Realtime] Channel TIMEOUT, mencoba reconnect dalam 5 detik...");
+                setTimeout(() => {
+                  console.log("[Realtime] Reconnecting...");
+                  supabase.removeChannel(channel).catch(() => {});
+                  bootstrap();
+                }, 5000);
+              } else if (status === "CLOSED") {
+                console.warn("[Realtime] Channel CLOSED, mencoba reconnect dalam 5 detik...");
+                setTimeout(() => {
+                  console.log("[Realtime] Reconnecting...");
+                  supabase.removeChannel(channel).catch(() => {});
+                  bootstrap();
+                }, 5000);
+              } else {
+                console.log("[Realtime] Status:", status);
+              }
+            });
 
         } catch (error) {
           console.error("Bootstrap error:", error);
