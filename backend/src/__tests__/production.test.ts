@@ -5,7 +5,7 @@ import {
   autoTransitionOrderOnSubtaskStart,
   autoTransitionOrderOnAllDone,
   hasActiveSubtasks,
-} from "../lib/validation";
+} from "../lib/validation.js";
 
 describe("Anti-Bypass — order status transitions", () => {
   it("should_allow_forward_transition_from_antrean", () => {

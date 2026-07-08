@@ -4,7 +4,7 @@ import {
   registerSchema,
   validateToken,
   hasActiveSubtasks,
-} from "../lib/validation";
+} from "../lib/validation.js";
 
 describe("AuthService — requireAuth", () => {
   it("should_reject_missing_auth_header", () => {

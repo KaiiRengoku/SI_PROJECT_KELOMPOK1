@@ -140,7 +140,7 @@ export function autoTransitionOrderOnAllDone(
   return orderStatus;
 }
 
-export function calculateWage(point: number, quantity: number): number {
+export function calculateWage(point: number | string, quantity: number): number {
   const basePoint = typeof point === "string" ? parseFloat(point) || 0 : point;
   const result = basePoint * quantity;
   if (isNaN(result) || !isFinite(result)) return 0;

@@ -3,7 +3,7 @@ import {
   pointEntrySchema,
   calculateWage,
   newId,
-} from "../lib/validation";
+} from "../lib/validation.js";
 
 describe("WageCalculator — calculate wage", () => {
   it("should_calculate_exact_wage_without_rounding_error", () => {

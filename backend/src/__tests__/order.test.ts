@@ -5,7 +5,7 @@ import {
   determineOrderType,
   getInitialStatus,
   handleStockDeduction,
-} from "../lib/validation";
+} from "../lib/validation.js";
 
 describe("OrderService — Zod schema validation", () => {
   it("should_reject_order_without_product_id", () => {
