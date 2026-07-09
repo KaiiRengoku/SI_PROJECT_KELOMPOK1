@@ -980,7 +980,7 @@ const activeTasks = orders.reduce((count, order) => {
     }),
     {
       name: "knitflow-session",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         currentUser: state.currentUser,
         token: state.token,
