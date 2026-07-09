@@ -470,7 +470,7 @@ export default function OwnerPengrajinReport() {
                         {expandedId === r.userId && (
                           <tr key={`${r.userId}-detail`}>
                             <td colSpan={5} className="p-0">
-                              <div className="bg-muted/20 border-t border-border">
+                              <div className="bg-muted/20 border-t border-border overflow-x-auto">
                                 {r.entries.length === 0 ? (
                                   <p className="p-4 text-sm text-muted-foreground text-center">Belum ada pekerjaan.</p>
                                 ) : (
@@ -630,11 +630,12 @@ export default function OwnerPengrajinReport() {
                 </DropdownMenu>
               </div>
             </div>
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="text-center p-3 font-semibold whitespace-nowrap w-8"></th>
-                  <th className="text-center p-3 font-semibold whitespace-nowrap">Nama</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+                  <tr>
+                    <th className="text-center p-3 font-semibold whitespace-nowrap w-8"></th>
+                    <th className="text-center p-3 font-semibold whitespace-nowrap">Nama</th>
                   <th className="text-center p-3 font-semibold whitespace-nowrap">Spesialisasi</th>
                   <th className="text-center p-3 font-semibold whitespace-nowrap">Tugas Selesai</th>
                   <th className="text-center p-3 font-semibold whitespace-nowrap">Total Upah</th>
@@ -666,7 +667,7 @@ export default function OwnerPengrajinReport() {
                       {expandedId === r.userId && (
                         <tr key={`${r.userId}-detail`}>
                           <td colSpan={5} className="p-0">
-                            <div className="bg-muted/20 border-t border-border">
+                            <div className="bg-muted/20 border-t border-border overflow-x-auto">
                               {r.entries.length === 0 ? (
                                 <p className="p-4 text-sm text-muted-foreground text-center">Belum ada pekerjaan.</p>
                               ) : (
@@ -700,6 +701,7 @@ export default function OwnerPengrajinReport() {
                 )}
               </tbody>
             </table>
+            </div>
           </Card>
         </>
       )}
