@@ -111,5 +111,5 @@ export interface Notification {
   message: string;
   date: string;
   read: boolean;
-  forRole: Role | "all";
+  forRole: Role | "all" | "admin_owner";
 }

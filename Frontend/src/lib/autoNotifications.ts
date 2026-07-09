@@ -53,7 +53,7 @@ export const buildAutoNotifications = (orders: Order[], products: Product[]): No
       message: `Tersisa ${totalStock} pcs (min. ${p.minStock}). Segera produksi ulang.`,
       date: new Date().toISOString(),
       read: false,
-      forRole: "all",
+      forRole: "admin_owner",
     });
   });
 
@@ -67,7 +67,7 @@ export const buildAutoNotifications = (orders: Order[], products: Product[]): No
       message: `${customActive} custom order aktif (batas 10). Tambahkan pengrajin atau jeda menerima order baru.`,
       date: new Date().toISOString(),
       read: false,
-      forRole: "all",
+      forRole: "admin_owner",
     });
   }
 
@@ -75,4 +75,8 @@ export const buildAutoNotifications = (orders: Order[], products: Product[]): No
 };
 
 export const filterByRole = (n: Notification[], role: Role) =>
-  n.filter((x) => x.forRole === role || x.forRole === "all");
+  n.filter((x) =>
+    x.forRole === role ||
+    x.forRole === "all" ||
+    (x.forRole === "admin_owner" && (role === "admin" || role === "owner"))
+  );

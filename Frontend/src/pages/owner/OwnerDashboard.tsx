@@ -6,9 +6,10 @@ import { PageHeader } from "@/components/prodify/PageHeader";
 import { AnimatedNumber } from "@/components/prodify/AnimatedNumber";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Zap, Users, AlertTriangle, TrendingUp, Package } from "lucide-react";
+import { ClipboardList, Zap, Users, AlertTriangle, TrendingUp } from "lucide-react";
 import { OrderCard } from "@/components/prodify/OrderCard";
 import { cn } from "@/lib/utils";
+import { getWaitingList } from "@/lib/waitingList";
 
 // REVISI LOKAL: Menyediakan fungsi kosmetik format rupiah mandiri secara lokal khusus di file ini
 const formatRupiah = (value: number | string) => {
@@ -21,23 +22,31 @@ const formatRupiah = (value: number | string) => {
 };
 
 export default function OwnerDashboard() {
-  const { orders, products, users, points } = useStore();
+  const { orders, products, users, points, locations } = useStore();
   const activeOrders = orders.filter((o) => o.status !== "Selesai");
   const [showAllOrders, setShowAllOrders] = useState(false);
+  const [isAlertDismissed, setIsAlertDismissed] = useState(false);
   const displayedOrders = showAllOrders ? activeOrders : activeOrders.slice(0, 9);
   const fastTrack = activeOrders.filter((o) => o.fastTrack);
   const pengrajin = users.filter((u) => u.role === "pengrajin");
   const busyIds = new Set(orders.flatMap((o) => o.subtasks.filter((s) => s.assignedTo && s.status === "Sedang Dikerjakan").map((s) => s.assignedTo!)));
 
-  const getProductTotalStock = (p: any) => {
-    if (typeof p.stock === "number") return p.stock;
-    if (p.stock && typeof p.stock === "object") {
-      return Object.values(p.stock).reduce((s: number, v: any) => s + (Number(v) || 0), 0);
-    }
-    return 0;
-  };
+  const lowStockList = products.flatMap((product) => {
+    const stockData = product.stock || {};
+    return Object.entries(stockData)
+      .filter(([_, quantity]) => (quantity as number) <= product.minStock)
+      .map(([locationId, quantity]) => {
+        const loc = locations?.find((l: any) => l.id === locationId);
+        return {
+          productName: product.name,
+          locationName: loc?.name || "Lokasi Tidak Dikenal",
+          currentStock: quantity as number,
+        };
+      });
+  });
 
-  const lowStock = products.filter((p) => getProductTotalStock(p) <= p.minStock);
+  const waitingCount = getWaitingList(orders).length;
+  const overload = waitingCount > 10;
 
   // Beban kerja: jumlah subtugas aktif (Waiting / On Progress) per pengrajin (FR-52)
   const workloadMap = new Map<string, number>();
@@ -83,11 +92,40 @@ export default function OwnerDashboard() {
     <div className="space-y-6">
       <PageHeader title="Dashboard Owner" description="Monitor produksi, stok, dan performa pengrajin secara real-time." />
 
+      {(overload || lowStockList.length > 0) && !isAlertDismissed && (
+        <Card className="p-4 border-l-4 border-l-warning bg-warning/5 flex items-start gap-3 relative">
+          <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+          <div className="space-y-1 text-sm w-full">
+            <button
+              onClick={() => setIsAlertDismissed(true)}
+              className="absolute top-2 right-3 text-warning font-bold hover:bg-warning/20 px-2 py-0.5 rounded transition-colors"
+              title="Tutup peringatan"
+            >✕</button>
+            <div className="pr-8">
+              {overload && (
+                <p className="mb-2"><strong>Kelebihan Kapasitas:</strong> Antrean {waitingCount} Bagian (batas 10).</p>
+              )}
+              {lowStockList.length > 0 && (
+                <div>
+                  <p className="font-bold">Stok Menipis ({lowStockList.length} titik lokasi):</p>
+                  <ul className="list-disc pl-5 mt-1 text-xs text-muted-foreground space-y-0.5">
+                    {lowStockList.slice(0, 4).map((item, i) => (
+                      <li key={i}>{item.productName} di <strong>{item.locationName}</strong> (Sisa: {item.currentStock})</li>
+                    ))}
+                    {lowStockList.length > 4 && <li>...dan {lowStockList.length - 4} lokasi lainnya</li>}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Total Pesanan" value={activeOrders.length} icon={ClipboardList} variant="primary" />
         <StatCard label="Prioritas Tinggi" value={`${fastTrack.length}/10`} icon={Zap} variant="destructive" />
         <StatCard label="Pengrajin Sibuk" value={`${busyIds.size}/${pengrajin.length}`} icon={Users} variant="secondary" />
-        <StatCard label="Stok Menipis" value={lowStock.length} icon={AlertTriangle} variant="warning" />
+        <StatCard label="Stok Menipis" value={lowStockList.length} icon={AlertTriangle} variant="warning" />
       </div>
 
       <Card className="p-5 bg-gradient-to-br from-secondary via-secondary to-secondary/80 text-secondary-foreground">
@@ -120,28 +158,6 @@ export default function OwnerDashboard() {
           </div>
         )}
       </div>
-
-      {/* Stok Menipis di bawah */}
-      {lowStock.length > 0 && (
-        <Card className="p-5">
-          <h2 className="font-bold text-foreground mb-3 flex items-center gap-2"><Package className="h-4 w-4 text-destructive" /> Stok Menipis</h2>
-          <div className="space-y-2">
-            {lowStock.map((p) => (
-              <div key={p.id} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 min-w-0">
-                  {p.image.startsWith("data:") || p.image.startsWith("http") || p.image.startsWith("/") ? (
-                    <img src={p.image} alt="" className="h-6 w-6 rounded object-cover" />
-                  ) : (
-                    <span className="text-lg">{p.image}</span>
-                  )}
-                  <span className="truncate">{p.name}</span>
-                </span>
-                <span className="font-bold text-destructive">{getProductTotalStock(p)} pcs</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

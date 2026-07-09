@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/prodify/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/prodify/StatusBadge";
-import { Calendar, MapPin, FileText, Zap, Play, Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Calendar, MapPin, FileText, Zap, Play, Package, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { EmptyState } from "@/components/prodify/EmptyState";
 import { ListChecks } from "lucide-react";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ export default function PengrajinTasks() {
   const { currentUser, orders, products, startSubtask } = useStore();
   const [startId, setStartId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [alertDismissed, setAlertDismissed] = useState(false);
   if (!currentUser) return null;
 
   const myTasks = orders
@@ -36,12 +37,38 @@ export default function PengrajinTasks() {
     )
     .sort((a, b) => Number(b.order.fastTrack) - Number(a.order.fastTrack));
 
+  const totalNew = myTasks.length;
+  const overdue = myTasks.filter((t) => daysUntil(t.order.deadline) < 0).length;
+  const approaching = myTasks.filter((t) => {
+    const d = daysUntil(t.order.deadline);
+    return d >= 0 && d <= 3;
+  }).length;
+  const hasAlerts = totalNew > 0 || overdue > 0 || approaching > 0;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title={`Halo, ${currentUser.name.split(" ")[0]} 👋`}
         description="Berikut tugas rajut yang ditugaskan kepada Anda."
       />
+
+      {hasAlerts && !alertDismissed && (
+        <Card className="p-4 border-l-4 border-l-warning bg-warning/5 flex items-start gap-3 relative">
+          <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+          <div className="space-y-1 text-sm w-full">
+            <button
+              onClick={() => setAlertDismissed(true)}
+              className="absolute top-2 right-3 text-warning font-bold hover:bg-warning/20 px-2 py-0.5 rounded transition-colors"
+              title="Tutup peringatan"
+            >✕</button>
+            <div className="pr-8 space-y-1">
+              {totalNew > 0 && <p>📋 {totalNew} tugas baru ditugaskan kepada Anda</p>}
+              {approaching > 0 && <p>⏰ {approaching} tugas mendekati tenggat (&le; 3 hari)</p>}
+              {overdue > 0 && <p className="font-semibold text-destructive">⚠️ {overdue} tugas terlambat! Segera selesaikan.</p>}
+            </div>
+          </div>
+        </Card>
+      )}
 
       {myTasks.length === 0 ? (
         <EmptyState icon={ListChecks} title="Tidak ada tugas antrean" description="Semua tugas sudah Anda kerjakan atau sedang dikerjakan. Terima kasih!" />

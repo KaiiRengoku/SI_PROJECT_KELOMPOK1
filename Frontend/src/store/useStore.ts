@@ -787,12 +787,12 @@ const activeTasks = orders.reduce((count, order) => {
         await supabase.from("notifications").update({ read: true }).not("id", "like", "auto-%")
         set((state) => ({
           notifications: state.notifications.map((n) =>
-            !role || n.forRole === role || n.forRole === "all" ? { ...n, read: true } : n
+            !role || n.forRole === role || n.forRole === "all" || (n.forRole === "admin_owner" && (role === "admin" || role === "owner")) ? { ...n, read: true } : n
           ),
           dismissedAutoNotifs: [
             ...state.dismissedAutoNotifs,
             ...buildAutoNotifications(state.orders, state.products)
-              .filter((n) => !role || n.forRole === role || n.forRole === "all")
+              .filter((n) => !role || n.forRole === role || n.forRole === "all" || (n.forRole === "admin_owner" && (role === "admin" || role === "owner")))
               .map((n) => n.id),
           ],
         }))
