@@ -343,7 +343,7 @@ export default function AdminProducts() {
       />
 
       {/* --- BOX CONTAINER CONTROLLER SEARCH BAR & FILTER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl border border-border bg-background shadow-sm sticky top-0 z-10 mt-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl border border-border bg-background shadow-sm md:sticky md:top-0 z-10 mt-0">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input

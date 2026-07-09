@@ -131,7 +131,7 @@ export default function AdminOrders() {
         description="Input pesanan custom & ready stock, pecah bagian, tugaskan ke pengrajin."
       />
 
-      <Card className="p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-card sticky top-0 z-10 mt-0">
+      <Card className="p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-card md:sticky md:top-0 z-10 mt-0">
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 flex-1 w-full">
           <div className="relative w-full md:max-w-xs xl:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
