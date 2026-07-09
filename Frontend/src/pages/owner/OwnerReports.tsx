@@ -223,7 +223,7 @@ export default function OwnerReports() {
         customerName: o.customerName,
         source: o.source || "-",
         category: p?.category || "-",
-        type: o.type === "custom" ? "Custom" : "Ready Stock",
+        type: o.type === "custom" ? "Kustom" : "Stok Tersedia",
         basePrice: p?.basePrice ?? 0,
         quantity: o.quantity,
         subtotal,
@@ -262,8 +262,8 @@ export default function OwnerReports() {
       const ringkasanData = [
         ["Ringkasan", monthLabel],
         ["Total Pesanan", monthMeta.totalOrders],
-        ["Pesanan Custom", monthMeta.customCount],
-        ["Pesanan Ready Stock", monthMeta.readyStockCount],
+        ["Pesanan Kustom", monthMeta.customCount],
+        ["Pesanan Stok Tersedia", monthMeta.readyStockCount],
         ["Total Pendapatan", monthMeta.revenue],
         ["Total Upah", monthMeta.upah],
       ];
@@ -298,7 +298,7 @@ export default function OwnerReports() {
             .filter(Boolean)
             .join(", ");
           const tanggal = new Date(o.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-          rows.push([o.code, tanggal, o.customerName, o.productName, o.source || "-", p?.category || "-", o.type === "custom" ? "Custom" : "Ready Stock", p?.basePrice ?? 0, o.quantity, subtotal, assignedNames || "-"]);
+          rows.push([o.code, tanggal, o.customerName, o.productName, o.source || "-", p?.category || "-", o.type === "custom" ? "Kustom" : "Stok Tersedia", p?.basePrice ?? 0, o.quantity, subtotal, assignedNames || "-"]);
         });
         const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
         XLSX.utils.book_append_sheet(wb, ws, monthName.slice(0, 31));
@@ -386,7 +386,7 @@ export default function OwnerReports() {
                   <ShoppingBag className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Custom</p>
+                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Kustom</p>
                   <p className="text-xl font-bold text-foreground"><AnimatedNumber value={yearCustomCount} /></p>
                 </div>
               </div>
@@ -397,7 +397,7 @@ export default function OwnerReports() {
                   <Store className="h-5 w-5 text-success" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Ready Stock</p>
+                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Stok Tersedia</p>
                   <p className="text-xl font-bold text-foreground"><AnimatedNumber value={yearReadyStockCount} /></p>
                 </div>
               </div>
@@ -453,7 +453,7 @@ export default function OwnerReports() {
                   <ShoppingBag className="h-5 w-5 text-violet-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Custom</p>
+                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Kustom</p>
                   <p className="text-xl font-bold text-foreground"><AnimatedNumber value={monthMeta.customCount} /></p>
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function OwnerReports() {
                   <Store className="h-5 w-5 text-emerald-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Ready Stock</p>
+                  <p className="text-xs text-muted-foreground font-semibold">Pesanan Stok Tersedia</p>
                   <p className="text-xl font-bold text-foreground"><AnimatedNumber value={monthMeta.readyStockCount} /></p>
                 </div>
               </div>
@@ -538,8 +538,8 @@ export default function OwnerReports() {
                   <YAxis tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" label={{ value: "Unit Terjual", angle: -90, position: "insideLeft", style: { fontSize: 12, fill: "hsl(var(--muted-foreground))" } }} allowDecimals={false} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="custom" stroke="#7c3aed" strokeWidth={2} name="Custom" dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="readyStock" stroke="#10b981" strokeWidth={2} name="Ready Stock" dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="custom" stroke="#7c3aed" strokeWidth={2} name="Kustom" dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="readyStock" stroke="#10b981" strokeWidth={2} name="Stok Tersedia" dot={{ r: 3 }} activeDot={{ r: 5 }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -622,7 +622,7 @@ export default function OwnerReports() {
                         <td className="p-3 text-center whitespace-nowrap">
                           <span className={cn(
                             "inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
-                            r.type === "Custom" ? "bg-violet-500/15 text-violet-600" : "bg-emerald-500/15 text-emerald-600"
+                            r.type === "Kustom" ? "bg-violet-500/15 text-violet-600" : "bg-emerald-500/15 text-emerald-600"
                           )}>
                             {r.type}
                           </span>

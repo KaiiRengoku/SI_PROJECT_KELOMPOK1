@@ -63,7 +63,7 @@ export default function AdminOrderDetail() {
             {/* 1. BADGE READY STOCK */}
             {order.type === "ready_stock" && (
               <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold uppercase">
-                Ready Stock
+                Stok Tersedia
               </span>
             )}
 

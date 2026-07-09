@@ -207,8 +207,8 @@ export const EditOrderDialog = ({ open, onOpenChange, order }: EditOrderDialogPr
 
         <Tabs value={type} onValueChange={(v) => { setType(v as OrderType); setProductId(""); setSelectedLocationId(""); }}>
           <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="custom">Custom</TabsTrigger>
-            <TabsTrigger value="ready_stock">Ready Stock</TabsTrigger>
+            <TabsTrigger value="custom">Kustom</TabsTrigger>
+            <TabsTrigger value="ready_stock">Stok Tersedia</TabsTrigger>
           </TabsList>
         </Tabs>
 

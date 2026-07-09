@@ -151,7 +151,7 @@ export default function PengrajinTasks() {
                         <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/20">
                           <FileText className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                           <div>
-                            <p className="text-xs font-semibold text-foreground mb-0.5">Catatan Custom</p>
+                            <p className="text-xs font-semibold text-foreground mb-0.5">Catatan Kustom</p>
                             <p className="text-sm text-muted-foreground">{t.order.notes}</p>
                           </div>
                         </div>
@@ -159,7 +159,7 @@ export default function PengrajinTasks() {
                         <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/20">
                           <FileText className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                           <div>
-                            <p className="text-xs font-semibold text-foreground mb-0.5">Catatan Custom</p>
+                            <p className="text-xs font-semibold text-foreground mb-0.5">Catatan Kustom</p>
                             <p className="text-sm text-muted-foreground italic">Tidak ada catatan.</p>
                           </div>
                         </div>

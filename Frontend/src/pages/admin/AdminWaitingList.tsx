@@ -195,7 +195,7 @@ export default function Penugasan() {
           "p-4 flex flex-col justify-center transition-all",
           overload ? "border-destructive bg-destructive/15" : "border-border bg-card"
         )}>
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Custom Pesanan Aktif</p>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Kustom Pesanan Aktif</p>
           <p className={cn("text-2xl font-bold mt-1", overload ? "text-destructive" : "text-foreground")}>
             {customActiveInQueue}/10
           </p>

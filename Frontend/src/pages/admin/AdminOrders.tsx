@@ -178,8 +178,8 @@ export default function AdminOrders() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Semua">Semua Kategori</SelectItem>
-                <SelectItem value="custom">Custom</SelectItem>
-                <SelectItem value="ready_stock">Ready Stock</SelectItem>
+                <SelectItem value="custom">Kustom</SelectItem>
+                <SelectItem value="ready_stock">Stok Tersedia</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -56,7 +56,7 @@ export const OrderCard = ({ order, onClick, compact }: Props) => {
             {/* 2. BADGE READY STOCK */}
             {order.type === "ready_stock" && (
               <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[10px] font-medium leading-none h-5 whitespace-nowrap shrink-0">
-                Ready Stock
+                Stok Tersedia
               </span>
             )}
 

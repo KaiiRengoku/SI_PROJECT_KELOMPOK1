@@ -321,9 +321,9 @@ export default function AdminDashboard() {
                         <TableCell className="text-center px-2 py-2.5 font-medium">{o.quantity}</TableCell>
                         <TableCell className="text-center px-2 py-2.5">
                           {o.type === "ready_stock" ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-200 text-black">Ready Stock</span>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-200 text-black">Stok Tersedia</span>
                           ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-300 text-neutral-900 border border-neutral-400/30">Custom</span>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-300 text-neutral-900 border border-neutral-400/30">Kustom</span>
                           )}
                         </TableCell>
                         <TableCell className="text-center px-2 py-2.5">
